@@ -18,6 +18,18 @@ class API1:
         """
         Perform a shallow analysis of all moves in the game.
 
+        The JSON fomatted string cointains the following informations:
+
+        * `turnData`:
+            * `[turn_number]` (starting at 0):
+                * `winrate`: winrate at current turn
+                * `scoreLead`: scoreLead at current turn
+                * `bestMove`: engine best move
+                * `bestMoveScoreLead`: scoreLead after playing the best move
+                * `nextPlayer`: color of the player for next turn ('B' or 'W')
+                * `classification`: player move's classifciation ('BEST', 'EXCELLENT', ...)
+        * `scoreLeadList`: ordered list of scoreLead over the game to plot the scoreLead graph
+
         :return: JSON formatted analysis data.
         :rtype: str
         """
