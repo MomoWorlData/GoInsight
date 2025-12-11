@@ -7,8 +7,8 @@ class Evaluator:
     """
     Used to classify the quality of plays.
 
-    Args:
-        analizer (Analizer): Analizer used to analyze the game.
+    :param analizer: Analyzer used to analyze the game.
+    :type analizer: Analizer
     """
     def __init__(self, analizer: Analizer):
         self.analizer = analizer

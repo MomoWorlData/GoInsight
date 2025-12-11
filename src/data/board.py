@@ -1,13 +1,19 @@
 """
 board.py
+========
 
 This module handles the board and its states.
 
-Modules:
-    board -- handle manipulation and encoding of the board.
-    game  -- handle manipulation and encoding of games.
-    move  -- handle manipulation and encoding of moves.
-    sgf   -- handle SGF parsing.
+Modules
+-------
+board
+    Handle manipulation and encoding of the board.
+game
+    Handle manipulation and encoding of games.
+move
+    Handle manipulation and encoding of moves.
+sgf
+    Handle SGF parsing.
 """
 
 from typing import Iterable, Optional, Set, Tuple, TYPE_CHECKING, List
@@ -21,15 +27,19 @@ class Board:
     """
     Stores board's data.
 
-    Args:
-        game (Game): Game associated to the board.
-        size (Tuple[int, int], optional): Size of the board (default to 19x19).
-        moves (List[Move], optional): List of moves (if not provided, game moves are used).
+    :param game: Game associated to the board.
+    :type game: Game
+    :param size: Size of the board (default to 19x19).
+    :type size: tuple[int, int], optional
+    :param moves: List of moves (if not provided, game moves are used).
+    :type moves: list[Move], optional
 
-    Attributes:
-        game (Game): Game associated to the board.
-        size (Tuple[int, int]): Size of the board.
-        board (List[List[Optional[Move]]]): Representation of the board.
+    :ivar game: Game associated to the board.
+    :vartype game: Game
+    :ivar size: Size of the board.
+    :vartype size: tuple[int, int]
+    :ivar board: Representation of the board.
+    :vartype board: list[list[Optional[Move]]]
     """
     def __init__(
         self,
@@ -48,11 +58,10 @@ class Board:
         """
         Create a board representation from a list of moves.
 
-        Args:
-            moves (List[Move]): List of moves.
+        :param moves: List of moves.
+        :type moves: list[Move]
 
-        Raises:
-            ValueError: If the moves provided countain an illegal sequence.
+        :raises ValueError: If the moves provided contain an illegal sequence.
         """
         self.board = [[None] * self.size[0] for _ in range(self.size[1])]
 
@@ -68,12 +77,13 @@ class Board:
         """
         Check if a position is valid on the board.
 
-        Args:
-            pos (Tuple[int, int]): Coordinates on board (first coord is left to right, second coord is top to bottom and both starts at 0).
-            board (List[List[Optional[Move]]], optional): Board tested (default to object's board if not provided).
+        :param pos: Coordinates on board (first coord is left to right, second coord is top to bottom and both start at 0).
+        :type pos: tuple[int, int]
+        :param board: Board tested (default to object's board if not provided).
+        :type board: list[list[Optional[Move]]], optional
 
-        Returns:
-            bool: Wether the position is valid or not.
+        :returns: Whether the position is valid or not.
+        :rtype: bool
         """
         if board is None:
             board = self.board
@@ -97,12 +107,13 @@ class Board:
         """
         Extract positions within a sub-board defined by the given corners.
 
-        Args:
-            corner1 (Tuple[int, int]): Coordinate of area's first corner.
-            corner2 (Tuple[int, int]): Coordinate of area's second corner.
+        :param corner1: Coordinate of area's first corner.
+        :type corner1: tuple[int, int]
+        :param corner2: Coordinate of area's second corner.
+        :type corner2: tuple[int, int]
 
-        Returns:
-            List[str]: List of positions within the selected area (in GTP format).
+        :returns: List of positions within the selected area (in GTP format).
+        :rtype: list[str]
         """
         x_c1, y_c1 = corner1
         x_c2, y_c2 = corner2
@@ -124,11 +135,10 @@ class Board:
         """
         Add a move to the board.
 
-        Args:
-            move (Move): Move to add.
+        :param move: Move to add.
+        :type move: Move
 
-        Raises:
-            ValueError: If the move is not valid.
+        :raises ValueError: If the move is not valid.
         """
         if not self.is_valid_pos(move.pos):
             raise ValueError(f"Board.add_move(move) -- Invalid move: {move.pos}")
@@ -139,14 +149,14 @@ class Board:
 
     def remove_move(self, move: Optional["Move"] = None, pos: Optional[Tuple[int, int]] = None):
         """
-        Add a move to the board.
+        Remove a move from the board.
 
-        Args:
-            move (Move, optional): Move to remove.
-            pos (Tuple[int, int], optional): Position of the move on board.
+        :param move: Move to remove.
+        :type move: Move, optional
+        :param pos: Position of the move on board.
+        :type pos: tuple[int, int], optional
 
-        Raises:
-            ValueError: If the position of the move doesn't exist or no argument is provided.
+        :raises ValueError: If the position of the move doesn't exist or no argument is provided.
         """
         if move is not None:
             x, y = move.pos
@@ -170,13 +180,13 @@ class Board:
         A neighbor is returned only if it lies within the board's boundaries.
         Neighbors follow 4-connectivity: left, right, up, down.
 
-        Args:
-            x (int): X-coordinate of the reference point (column).
-            y (int): Y-coordinate of the reference point (row).
+        :param x: X-coordinate of the reference point (column).
+        :type x: int
+        :param y: Y-coordinate of the reference point (row).
+        :type y: int
 
-        Returns:
-            Iterable[Tuple[int, int]]: An iterable yielding coordinates of all
-            valid orthogonal neighbors.
+        :returns: An iterable yielding coordinates of all valid orthogonal neighbors.
+        :rtype: collections.abc.Iterable[tuple[int, int]]
         """
         x_size, y_size = self.size
         if x > 0: yield (x - 1, y)
@@ -192,13 +202,13 @@ class Board:
         orthogonal adjacency (4-neighborhood). Liberties are all empty
         intersections adjacent to any stone in the group.
 
-        Args:
-            start (Tuple[int, int]): Coordinate of the starting stone.
+        :param start: Coordinate of the starting stone.
+        :type start: tuple[int, int]
 
-        Returns:
-            Tuple[Set[Tuple[int, int]], Set[Tuple[int, int]]]:
-                - A set of coordinates representing the group.
-                - A set of coordinates representing all liberties of that group.
+        :returns:
+            - A set of coordinates representing the group.
+            - A set of coordinates representing all liberties of that group.
+        :rtype: tuple[set[tuple[int, int]], set[tuple[int, int]]]
         """
         x0, y0 = start
         stone = self.board[y0][x0]
@@ -235,12 +245,11 @@ class Board:
 
         This function is rule-agnostic: it also removes self-captured stones.
 
-        Args:
-            pos (Tuple[int, int]): Position of the move triggering the update.
+        :param pos: Position of the move triggering the update.
+        :type pos: tuple[int, int]
 
-        Returns:
-            List[Tuple[int, int]]: Sorted list of coordinates of all stones
-            removed during the capture resolution.
+        :returns: Sorted list of coordinates of all stones removed during the capture resolution.
+        :rtype: list[tuple[int, int]]
         """
         to_remove = set()
         visited = set()

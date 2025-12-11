@@ -1,13 +1,19 @@
 """
 move.py
+=======
 
 This module handles Go moves creation, manipulation and export.
 
-Modules:
-    board -- handle manipulation and encoding of the board.
-    game  -- handle manipulation and encoding of games.
-    move  -- handle manipulation and encoding of moves.
-    sgf   -- handle SGF parsing.
+Modules
+-------
+board
+    Handle manipulation and encoding of the board.
+game
+    Handle manipulation and encoding of games.
+move
+    Handle manipulation and encoding of moves.
+sgf
+    Handle SGF parsing.
 """
 
 from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
@@ -20,19 +26,23 @@ class Move:
     """
     Stores move's data.
 
-    Args:
-        game (Game): Game associated to the move.
-        color (str, optional): Color of the move (infered from the game if not provided or invalid).
-        pos (Tuple[int, int], optional): Coordinates of the move on board (move is a 'pass' if not provided).
+    :param game: Game associated to the move.
+    :type game: Game
+    :param color: Color of the move (inferred from the game if not provided or invalid).
+    :type color: str, optional
+    :param pos: Coordinates of the move on board (move is a 'pass' if not provided).
+    :type pos: tuple[int, int], optional
 
-    Raises:
-        ValueError: If the position provided is invalid.
+    :raises ValueError: If the position provided is invalid.
 
-    Attributes:
-        game (Game): The game to play the move on.
-        turn (int): Turn on which the move is played (starts at 0).
-        color (str): Color playing the move ('b' for black and 'w' for white).
-        pos (Tuple[int, int]): Coordinates on board (first coord is left to right, second coord is top to bottom and both starts at 0).
+    :ivar game: The game to play the move on.
+    :vartype game: Game
+    :ivar turn: Turn on which the move is played (starts at 0).
+    :vartype turn: int
+    :ivar color: Color playing the move ('b' for black and 'w' for white).
+    :vartype color: str
+    :ivar pos: Coordinates on board (first coord is left to right, second coord is top to bottom and both starts at 0).
+    :vartype pos: tuple[int, int]
     """
 
     def __init__(
@@ -57,16 +67,15 @@ class Move:
     @classmethod
     def sgf_to_coord(cls, sgf_pos: str) -> Optional[Tuple[int, int]]:
         """
-        Translate SGF coordinate format to a simple coordinates.
+        Translate SGF coordinate format to simple coordinates.
 
-        Args:
-            sgf_pos (str): Coordinates in the SGF format.
+        :param sgf_pos: Coordinates in the SGF format.
+        :type sgf_pos: str
 
-        Returns:
-            Tuple[int, int], optional: The corresponding coordinates.
-        
-        Raises:
-            ValueError: If the sgf position has an invalid character.
+        :returns: The corresponding coordinates.
+        :rtype: tuple[int, int] or None
+
+        :raises ValueError: If the SGF position has an invalid character.
         """
         if sgf_pos == "":
             return None
@@ -77,11 +86,11 @@ class Move:
         """
         Translate SGF coordinate format to GTP coordinate format.
 
-        Args:
-            sgf_pos (str): Coordinates in the SGF format.
+        :param sgf_pos: Coordinates in the SGF format.
+        :type sgf_pos: str
 
-        Returns:
-            str: The corresponding position in GTP format ('pass' if sgf_pos is empty).
+        :returns: The corresponding position in GTP format ('pass' if sgf_pos is empty).
+        :rtype: str
         """
         coords = Move.sgf_to_coord(sgf_pos)
 
@@ -97,15 +106,15 @@ class Move:
         """
         Create a move from a GTP instruction.
 
-        Args:
-            game (Game): Game to associate with the move.
-            gtp_move (str): Move in the GTP format (e.g.: 'w A19').
+        :param game: Game to associate with the move.
+        :type game: Game
+        :param gtp_move: Move in the GTP format (e.g.: 'w A19').
+        :type gtp_move: str
 
-        Returns:
-            Move: Corresponding Move object.
+        :returns: Corresponding Move object.
+        :rtype: Move
 
-        Raises:
-            ValueError: If the instruction is not under GTP format.
+        :raises ValueError: If the instruction is not under GTP format.
         """
         parsed = gtp_move.split(" ")
 
@@ -131,9 +140,9 @@ class Move:
     def to_gtp(self) -> str:
         """
         Translate the move to the GTP format.
-        
-        Returns:
-            str: the move in GTP format.
+
+        :returns: The move in GTP format.
+        :rtype: str
         """
         out = self.color
 
@@ -152,8 +161,8 @@ class Move:
         """
         Translate the move to the SGF format.
 
-        Returns:
-            Dict[str,List[str]]: Key encode the color and value is the position in SGF format inserted in a list. 
+        :returns: Key encodes the color and value is the position in SGF format inserted in a list.
+        :rtype: dict[str, list[str]]
         """
         x, y = self.pos
         pos_sgf = VALID_COLUMN_SGF[x] + VALID_COLUMN_SGF[y]

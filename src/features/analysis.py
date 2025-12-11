@@ -10,18 +10,21 @@ class Analizer:
     """
     Used to analyze different aspects of a game.
 
-    Args:
-        file (str): Path to the SGF file of the game.
-        player (str): Protagonist of the analysis ('B' or 'W').
-    
-    Attributes:
-        tree (SgfTree): SGF tree of the game.
-        player (str): Protagonist of the analysis ('B' or 'W').
-        game_analysis: Shalow analysis of the full game.
-        turn_analysis (Dict[int, analysis]): Deep analysis of specific turn (dict key represent the turn). 
+    :param file: Path to the SGF file of the game.
+    :type file: str
+    :param player: Protagonist of the analysis ('B' or 'W').
+    :type player: str
 
-    Raises:
-        ValueError: If player is not 'B' or 'W'.
+    :ivar tree: SGF tree of the game.
+    :vartype tree: SgfTree
+    :ivar player: Protagonist of the analysis ('B' or 'W').
+    :vartype player: str
+    :ivar game_analysis: Shallow analysis of the full game.
+    :vartype game_analysis: Any
+    :ivar turn_analysis: Deep analysis of specific turn (dict key represents the turn).
+    :vartype turn_analysis: dict[int, Any]
+
+    :raises ValueError: If player is not 'B' or 'W'.
     """
     def __init__(self, file: str, player: str = "B"):
         self.tree = SgfTree.from_sgf(file)
@@ -101,10 +104,12 @@ class Analizer:
         """
         This function performs an analysis of a Go move in depth using KataGo.
 
-        Args:
-            turn (int): Turn fo the game to analize.
-            selection (List[str], optional): List of positions in GTP format that KataGo must use (e.g.: ["C3","Q4","pass"]).
-            invert_selection (bool): If true, the selection can't be used by KataGo (default to false).
+        :param turn: Turn of the game to analyze (starts at 0).
+        :type turn: int
+        :param selection: List of positions in GTP format that KataGo must use (e.g.: ["C3", "Q4", "pass"]).
+        :type selection: list[str], optional
+        :param invert_selection: If true, the selection can't be used by KataGo. Defaults to False.
+        :type invert_selection: bool
         """
         # Katago selection depending on OS
         if platform.system() == "Darwin":
@@ -169,11 +174,10 @@ class Analizer:
         """
         This function returns the score lead of black over the course of the game.
 
-        Returns:
-            List[float]: List of the score lead at every turn.
+        :returns: List of the score lead at every turn.
+        :rtype: list[float]
 
-        Raises:
-            ValueError: If the game analysis is not done yet.
+        :raises ValueError: If the game analysis is not done yet.
         """
         if self.game_analysis is None:
             raise ValueError(f"Analizer.game_score_lead() -- Run the game analysis before this: Analizer.game_analysis = None")
@@ -184,20 +188,21 @@ class Analizer:
     def turn_basic_data(self, turn: int) -> Tuple[float, float, str, float]:
         """
         This function returns the basic infos to display on the analysis UI.
-        All data is from the perspective of the Analizer's selected player.
+        All data is from the perspective of the Analyzer's selected player.
 
-        Args:
-            turn (int): Selected turn (starting at 0). 
+        :param turn: Selected turn.
+        :type turn: int
 
-        Returns:
-            float: Winrate of the position.
-            float: Score lead of the position.
-            str  : KataGo best move in GTP format.
-            float: Score lead after KataGo best move.
-            str  : Next turn player ('B' or 'W').
+        :returns:
+            - **Winrate of the position** (`float`): The probability (0.0 to 1.0) of the selected player winning from the current position.
+            - **Score lead of the position** (`float`): The expected score difference (in points) for the selected player.
+            - **KataGo best move in GTP format** (`str`): The move KataGo considers optimal.
+            - **Score lead after KataGo best move** (`float`): The expected score difference for the selected player if the best move is played.
+            - **Next turn player** (`str`): The color ('B' or 'W') who is to play next.
 
-        Raises:
-            ValueError: If the turn selected is not in the game.
+        :rtype: tuple[float, float, str, float, str]
+
+        :raises ValueError: If the turn selected is not in the game.
         """
         if turn >= len(self.game_analysis):
             raise ValueError(f"Analizer.turn_basic_data(turn) -- The turn selected is not in the game analysis: turn = {turn}")

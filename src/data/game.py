@@ -1,13 +1,19 @@
 """
 game.py
+=======
 
 This module handles Go games import, manipulation and export.
 
-Modules:
-    board -- handle manipulation and encoding of the board.
-    game  -- handle manipulation and encoding of games.
-    move  -- handle manipulation and encoding of moves.
-    sgf   -- handle SGF parsing.
+Modules
+-------
+board
+    Handle manipulation and encoding of the board.
+game
+    Handle manipulation and encoding of games.
+move
+    Handle manipulation and encoding of moves.
+sgf
+    Handle SGF parsing.
 """
 
 from typing import List, Optional, overload, Tuple, Union
@@ -20,23 +26,35 @@ class Game:
     """
     Manages game's data with various tools.
 
-    Args:
-        RU (List[str]): Ruleset (e.g.: Japanese). 
-        SZ (List[str]): Size of the board, non-square boards are supported. 
-        KM (List[str]): Komi. 
-        HA (List[str], optional): Number of handicap stones given to Black. Placement of the handicap stones are set using the AB property. 
-        AB (List[str], optional): Locations of Black stones to be placed on the board prior to the first move. 
-        AW (List[str], optional): Locations of White stones to be placed on the board prior to the first move. 
+    :param RU: Ruleset (e.g.: Japanese).
+    :type RU: list[str]
+    :param SZ: Size of the board, non-square boards are supported.
+    :type SZ: list[str]
+    :param KM: Komi.
+    :type KM: list[str]
+    :param HA: Number of handicap stones given to Black. Placement of the handicap stones are set using the AB property.
+    :type HA: list[str], optional
+    :param AB: Locations of Black stones to be placed on the board prior to the first move.
+    :type AB: list[str], optional
+    :param AW: Locations of White stones to be placed on the board prior to the first move.
+    :type AW: list[str], optional
 
-    Attributes:
-        ruleset (str): Ruleset (e.g.: Japanese).
-        size (Tuple[int, int]): Width and height of the board, non-square boards are supported.
-        komi (float): Komi.
-        handicap (int): Number of handicap stones given to Black.
-        board (Board): Board of the game, used to store board states.
-        moves (List[str]): Sequence of moves.
-        AB (List[str], optional): Initial stones for black.
-        AW (List[str], optional): Initial stones for white.
+    :ivar ruleset: Ruleset (e.g.: Japanese).
+    :vartype ruleset: str
+    :ivar size: Width and height of the board, non-square boards are supported.
+    :vartype size: tuple[int, int]
+    :ivar komi: Komi.
+    :vartype komi: float
+    :ivar handicap: Number of handicap stones given to Black.
+    :vartype handicap: int
+    :ivar board: Board of the game, used to store board states.
+    :vartype board: Board
+    :ivar moves: Sequence of moves.
+    :vartype moves: list[str]
+    :ivar AB: Initial stones for black.
+    :vartype AB: list[str], optional
+    :ivar AW: Initial stones for white.
+    :vartype AW: list[str], optional
     """
 
     def __init__(
@@ -79,11 +97,11 @@ class Game:
         """
         Create a new Game object from an sgf tree.
 
-        Args:
-            tree (SgfTree): SgfTree of the game.
-        
-        Returns:
-            Game: The game provided in the sgf tree.
+        :param tree: SgfTree of the game.
+        :type tree: SgfTree
+
+        :returns: The game provided in the sgf tree.
+        :rtype: Game
         """
         root_properties = tree.properties
         game = Game(**root_properties)
@@ -98,8 +116,8 @@ class Game:
         """
         Create a new SgfTree object from the game.
 
-        Returns:
-            SgfTree: The SgfTree corresponding to the game.
+        :returns: The SgfTree corresponding to the game.
+        :rtype: SgfTree
         """
         # Size formating
         if self.size[0] != self.size[1]:
@@ -136,8 +154,8 @@ class Game:
         """
         Tells if it is black's or white's turn.
 
-        Returns:
-            str: 'B' for black and 'W' for white.
+        :returns: 'B' for black and 'W' for white.
+        :rtype: str
         """
         # Notes: by default black start the game
         # If black has bonus stones to handicap white, white start the game. Except if black has only one bonus stone, then black starts the game.
@@ -149,11 +167,11 @@ class Game:
         """
         Tells if a position is valid for a move.
 
-        Args:
-            pos (Tuple[int,int]): Position to test.
+        :param pos: Position to test.
+        :type pos: tuple[int, int]
 
-        Returns:
-            bool: Wether the position is playable or not.
+        :returns: Whether the position is playable or not.
+        :rtype: bool
         """
         return self.board.is_valid_pos(pos)
     
@@ -167,12 +185,12 @@ class Game:
         """
         Place one or more stones on the board without registering a move.
 
-        Args:
-            color (str): Color of the stone(s).
-            pos (Tuple[int,int] | List[Tuple[int,int]]): Coordinates of the stone(s).
+        :param color: Color of the stone(s).
+        :type color: str
+        :param pos: Coordinates of the stone(s).
+        :type pos: tuple[int, int] | list[tuple[int, int]]
 
-        Raises:
-            ValueError: If the coordinates are invalid.
+        :raises ValueError: If the coordinates are invalid.
         """
         if isinstance(pos, tuple):
             move = Move(self, color, pos)
@@ -191,12 +209,11 @@ class Game:
         """
         Play a move.
 
-        Args:
-            move_gtp (str): Move in the GTP format (e.g.: 'W A19').
+        :param move_gtp: Move in the GTP format (e.g.: 'W A19').
+        :type move_gtp: str
 
-        Raises:
-            ValueError: If the move is illegal (invalid format, out of bounds,
-                played on an occupied point).
+        :raises ValueError: If the move is illegal (invalid format, out of bounds,
+            played on an occupied point).
         """
         move = Move.from_gtp(self, move_gtp)
         move.turn = len(self.moves)

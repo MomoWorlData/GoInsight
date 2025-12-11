@@ -1,13 +1,19 @@
 """
 sgf.py
+======
 
 This module handles translations between SGF encodings and SGF trees.
 
-Modules:
-    board -- handle manipulation and encoding of the board.
-    game  -- handle manipulation and encoding of games.
-    move  -- handle manipulation and encoding of moves.
-    sgf   -- handle SGF parsing.
+Modules
+-------
+board
+    Handle manipulation and encoding of the board.
+game
+    Handle manipulation and encoding of games.
+move
+    Handle manipulation and encoding of moves.
+sgf
+    Handle SGF parsing.
 """
 
 import os
@@ -18,13 +24,15 @@ if TYPE_CHECKING:
     from .game import Game
 
 class SgfTree:
-    """Represents a node in an SGF (Smart Game Format) tree.
+    """
+    Represents a node in an SGF (Smart Game Format) tree.
 
     Each SGF tree node may contain a set of properties and a list of child nodes.
 
-    Attributes:
-        properties (dict): A dictionary mapping property names (str) to lists of values (list[str]).
-        children (list[SgfTree]): A list of child SgfTree nodes.
+    :ivar properties: A dictionary mapping property names (str) to lists of values (list[str]).
+    :vartype properties: dict
+    :ivar children: A list of child SgfTree nodes.
+    :vartype children: list[SgfTree]
     """
 
     def __init__(
@@ -32,23 +40,18 @@ class SgfTree:
         properties: Dict[str, List[str]] = None,
         children: Optional[List["SgfTree"]] = None
     ):
-        """Initialize a new SgfTree instance.
-
-        Args:
-            properties (dict, optional): A dictionary of SGF properties. Defaults to an empty dict.
-            children (list[SgfTree], optional): A list of child nodes. Defaults to an empty list.
-        """
         self.properties = properties or {}
         self.children = children or []
 
     def __eq__(self, other: "SgfTree") -> bool:
-        """Compare two SgfTree instances for equality.
+        """
+        Compare two SgfTree instances for equality.
 
-        Args:
-            other (SgfTree): Another SgfTree instance to compare with.
+        :param other: Another SgfTree instance to compare with.
+        :type other: SgfTree
 
-        Returns:
-            bool: True if both trees have identical properties and children, False otherwise.
+        :returns: True if both trees have identical properties and children, False otherwise.
+        :rtype: bool
         """
         if not isinstance(other, SgfTree):
             return False
@@ -68,31 +71,32 @@ class SgfTree:
         return True
 
     def __ne__(self, other: "SgfTree") -> bool:
-        """Check if two SgfTree instances are not equal.
+        """
+        Check if two SgfTree instances are not equal.
 
-        Args:
-            other (SgfTree): Another SgfTree instance to compare with.
+        :param other: Another SgfTree instance to compare with.
+        :type other: SgfTree
 
-        Returns:
-            bool: True if the two trees are not equal, False otherwise.
+        :returns: True if the two trees are not equal, False otherwise.
+        :rtype: bool
         """
         return not self == other
     
     @classmethod
     def from_sgf(cls, path: str) -> "SgfTree":
-        """Create an SgfTree instance from an SGF file.
+        """
+        Create an SgfTree instance from an SGF file.
 
         This method reads an SGF file from the given path and parses its content into an SgfTree structure.
 
-        Args:
-            path (str): The filesystem path to the SGF file.
+        :param path: The filesystem path to the SGF file.
+        :type path: str
 
-        Returns:
-            SgfTree: The root node of the parsed SGF tree.
+        :returns: The root node of the parsed SGF tree.
+        :rtype: SgfTree
 
-        Raises:
-            FileNotFoundError: If the file does not exist or cannot be accessed.
-            ValueError: If the SGF file content is invalid and cannot be parsed.
+        :raises FileNotFoundError: If the file does not exist or cannot be accessed.
+        :raises ValueError: If the SGF file content is invalid and cannot be parsed.
         """
         if not os.path.isfile(path):
             raise FileNotFoundError(f"The specified SGF file was not found: '{path}'")
@@ -107,8 +111,8 @@ class SgfTree:
         """
         Create a new SgfTree object from the game.
 
-        Returns:
-            SgfTree: The SgfTree corresponding to the game.
+        :returns: The SgfTree corresponding to the game.
+        :rtype: SgfTree
         """
         return game.to_sgftree()
 
@@ -116,26 +120,26 @@ class SgfTree:
         """
         Create a new Game object from an sgf tree.
 
-        Args:
-            tree (SgfTree): SgfTree of the game.
-        
-        Returns:
-            Game: The game provided in the sgf tree.
+        :param tree: SgfTree of the game.
+        :type tree: SgfTree
+
+        :returns: The game provided in the sgf tree.
+        :rtype: Game
         """
         from .game import Game
         return Game.from_sgftree(self)
     
     def to_sgf(self, path: Optional[str] = None) -> str:
-        """Convert this SgfTree into a full SGF string and optionally save it to a file.
+        """
+        Convert this SgfTree into a full SGF string and optionally save it to a file.
 
-        Args:
-            path (str, optional): If provided, the SGF output will be written to this file path.
+        :param path: If provided, the SGF output will be written to this file path.
+        :type path: str, optional
 
-        Returns:
-            str: The SGF-formatted string representation of this tree.
+        :returns: The SGF-formatted string representation of this tree.
+        :rtype: str
 
-        Raises:
-            OSError: If writing to the file fails.
+        :raises OSError: If writing to the file fails.
         """
         sgf_string = f"({serialize(self)})"
 
@@ -146,22 +150,26 @@ class SgfTree:
         return sgf_string
     
     def move_sequence(self, board_size: Optional[Tuple[int, int]] = None, insert_tuple: bool = False) -> Union[List[str], List[Tuple[str, str]]]:
-        """Obtain the sequence of moves from the tree.
+        """
+        Obtain the sequence of moves from the tree.
 
         This method generates a list of moves in the GTP format.
 
-        Args:
-            board_size (Tuple[int, int], optional): Size of the board. If not provided, it is fetched from the tree.
-            insert_tuple (bool, optional): If true, the color and the GTP coordinates are inserted into a tuple. Default to False. 
+        :param board_size: Size of the board. If not provided, it is fetched from the tree.
+        :type board_size: tuple[int, int], optional
+        :param insert_tuple: If true, the color and the GTP coordinates are inserted into a tuple. Defaults to False.
+        :type insert_tuple: bool, optional
 
-        Returns:
-            (Union[List[str], List[Tuple[str, str]]]): Sequence of move.
+        :returns: Sequence of move.
+        :rtype: list[str] or list[tuple[str, str]]
 
-        Examples:
-            With insert_tuple = False:
-                tree.move_sequence(insert_tuple=False) = ["W A19", "B B18", "W pass"]
-            With insert_tuple = True:
-                tree.move_sequence(insert_tuple=True) =  [("W", "A19"), ("B", "B18"), ("W", "pass")]
+        :Example:
+            With ``insert_tuple = False``:
+                >>> tree.move_sequence(insert_tuple=False)
+                ["W A19", "B B18", "W pass"]
+            With ``insert_tuple = True``:
+                >>> tree.move_sequence(insert_tuple=True)
+                [("W", "A19"), ("B", "B18"), ("W", "pass")]
         """
         from .move import Move
 
@@ -187,14 +195,14 @@ class SgfTree:
         return sequence
     
     def get_board_size(self) -> Tuple[int, int]:
-        """ Fetch the board size from the properties of the root
+        """
+        Fetch the board size from the properties of the root.
 
-        Returns:
-            (Tuple[int, int]): The size of the board.
+        :returns: The size of the board.
+        :rtype: tuple[int, int]
 
-        Raises:
-            KeyError: If the root of the tree doesn't have a 'SZ' property.
-            ValueError: If the board size is invalid.
+        :raises KeyError: If the root of the tree doesn't have a 'SZ' property.
+        :raises ValueError: If the board size is invalid.
         """
         from .constants import MAX_BOARD_SIZE
 
@@ -208,34 +216,34 @@ class SgfTree:
 
         
 def parse(input: str) -> "SgfTree":
-    """Parse an SGF string into an SgfTree object.
+    """
+    Parse an SGF string into an SgfTree object.
 
     This function parses the textual SGF format and returns the corresponding
     SgfTree representation. It validates the syntax and raises ValueError on malformed input.
 
-    Args:
-        input (str): The SGF-formatted input string.
+    :param input: The SGF-formatted input string.
+    :type input: str
 
-    Returns:
-        SgfTree: The root node of the parsed SGF tree.
+    :returns: The root node of the parsed SGF tree.
+    :rtype: SgfTree
 
-    Raises:
-        ValueError: If the SGF format is invalid, such as:
-            - Missing tree delimiters.
-            - Lowercase property names.
-            - Improper property delimiters.
-            - Empty trees or malformed nodes.
+    :raises ValueError: If the SGF format is invalid, such as:
+        - Missing tree delimiters.
+        - Lowercase property names.
+        - Improper property delimiters.
+        - Empty trees or malformed nodes.
     """
     pos = 1
 
     def get_property():
-        """Parse a single SGF property and its values.
+        """
+        Parse a single SGF property and its values.
 
-        Returns:
-            dict: A dictionary containing one property name and its list of values.
+        :returns: A dictionary containing one property name and its list of values.
+        :rtype: dict
 
-        Raises:
-            ValueError: If property syntax is invalid (e.g., lowercase name, missing delimiters).
+        :raises ValueError: If property syntax is invalid (e.g., lowercase name, missing delimiters).
         """
         nonlocal pos
         ind = pos
@@ -267,13 +275,13 @@ def parse(input: str) -> "SgfTree":
         return prop
     
     def get_node():
-        """Recursively parse a single SGF node and its children.
+        """
+        Recursively parse a single SGF node and its children.
 
-        Returns:
-            SgfTree: The parsed node with properties and subtrees.
+        :returns: The parsed node with properties and subtrees.
+        :rtype: SgfTree
 
-        Raises:
-            ValueError: If the SGF tree contains empty nodes or malformed structure.
+        :raises ValueError: If the SGF tree contains empty nodes or malformed structure.
         """
         nonlocal pos
         properties = {}
@@ -296,16 +304,17 @@ def parse(input: str) -> "SgfTree":
     return get_node()
 
 def serialize(tree: "SgfTree") -> str:
-    """Serialize an SgfTree instance into an SGF-formatted string.
+    """
+    Serialize an SgfTree instance into an SGF-formatted string.
 
     This function recursively converts an SgfTree and its children into a valid
     SGF representation, escaping special characters as required by the SGF specification.
 
-    Args:
-        tree (SgfTree): The SgfTree instance to serialize.
+    :param tree: The SgfTree instance to serialize.
+    :type tree: SgfTree
 
-    Returns:
-        str: A valid SGF-formatted string representing the tree.
+    :returns: A valid SGF-formatted string representing the tree.
+    :rtype: str
     """
 
     def escape_value(value: str) -> str:
