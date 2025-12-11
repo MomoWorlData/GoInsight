@@ -187,7 +187,7 @@ class Analizer:
         All data is from the perspective of the Analizer's selected player.
 
         Args:
-            turn (int): Selected turn. 
+            turn (int): Selected turn (starting at 0). 
 
         Returns:
             float: Winrate of the position.
