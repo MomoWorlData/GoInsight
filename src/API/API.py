@@ -22,12 +22,12 @@ class API:
             {
                 "turnData": {
                     0: {
-                        "winrate": float,
-                        "scoreLead": float,
-                        "bestMove": string,
-                        "bestMoveScoreLead": float,
-                        "nextPlayer": string,
-                        "classification": string
+                        "winrate": 0.543811481,
+                        "scoreLead": 0.530673978,
+                        "bestMove": "C3",
+                        "bestMoveScoreLead": 0.738980102,
+                        "nextPlayer": "W",
+                        "classification": "BEST"
                     },
                     1: {
                         // ... similar structure for turn 1
@@ -35,29 +35,26 @@ class API:
                     // ... for all turns in the game
                 },
                 "scoreLeadList": [
-                    float, // Score lead at turn 0
-                    float, // Score lead at turn 1
+                    0.530673978, // Score lead at turn 0
+                    0.456144541, // Score lead at turn 1
                     // ... for all turns in the game
                 ]
             }
 
-        :jsonparam dict turnData: A dictionary where each key is a turn number (as a string, starting from "0")
-                                  and its value is another dictionary containing detailed analysis for that turn.
-        :jsonparam float turnData.[turn_number].winrate: The probability (0.0 to 1.0) of the selected player winning
-                                                         at the start of the current turn.
-        :jsonparam float turnData.[turn_number].scoreLead: The expected score difference for the selected player
-                                                           at the start of the current turn.
-        :jsonparam str turnData.[turn_number].bestMove: The optimal move suggested by the engine for the current
-                                                        board position, in GTP format (e.g., "C3", "Q4", "pass").
-        :jsonparam float turnData.[turn_number].bestMoveScoreLead: The expected score difference for the selected
-                                                                   player if the `bestMove` is played.
-        :jsonparam str turnData.[turn_number].nextPlayer: The color ('B' for Black or 'W' for White) of the player
-                                                          whose turn it is to make a move.
-        :jsonparam str turnData.[turn_number].classification: A qualitative assessment of the actual move played
-                                                              by the player in this turn (e.g., 'BEST', 'EXCELLENT',
-                                                              'GOOD', 'INACCURACY', 'MISTAKE', 'BLUNDER').
-        :jsonparam list[float] scoreLeadList: An ordered list of score leads for the selected player at each turn
-                                              of the game, suitable for plotting score lead over the game.
+        The returned JSON object has the following structure:
+
+        - **turnData** (*dict*): A dictionary where keys are turn numbers (e.g., "0", "1") and values are objects
+          containing the analysis for that turn. The turn object contains the following fields:
+
+            - **winrate** (*float*): The probability (0.0 to 1.0) of the selected player winning at the start of the turn.
+            - **scoreLead** (*float*): The expected score difference for the selected player at the start of the turn.
+            - **bestMove** (*str*): The optimal move suggested by the engine in GTP format (e.g., "C3", "pass").
+            - **bestMoveScoreLead** (*float*): The expected score difference if the `bestMove` is played.
+            - **nextPlayer** (*str*): The color of the player to move ('B' or 'W').
+            - **classification** (*str*): A qualitative assessment of the move played (e.g., 'BEST', 'EXCELLENT', 'MISTAKE').
+
+        - **scoreLeadList** (*list[float]*): An ordered list of score leads for black at each turn,
+          suitable for plotting a score lead graph over the game.
 
         :return: JSON formatted analysis data.
         :rtype: str
