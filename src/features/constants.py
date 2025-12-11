@@ -19,3 +19,9 @@ MOVE_CLASSIFICATION_BOUNDS: Dict[str, Tuple[int, int]] = {
     "MISTAKE": (0.002, 0.01),     # 95th percentile of winrate loss
     "BLUNDER": (0.01, 1.0)        # Above the 95th percentile of winrate loss
     }
+
+# Amount of move proposition given by the deep turn analysis
+MOVE_PROPOSITIONS_PER_TURN = 3
+
+# Maximum amount of move given in the possible variation for a move
+PV_MAX_LENGTH = 5

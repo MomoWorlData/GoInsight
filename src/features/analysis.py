@@ -1,10 +1,10 @@
 import json
 import platform
 import subprocess
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from ..data import Game, SgfTree
-from .constants import GAME_ANALYSIS_CONFIG_PATH, MODEL_DIR, NEURALNET_PATH, TURN_ANALYSIS_CONFIG_PATH
+from .constants import GAME_ANALYSIS_CONFIG_PATH, MODEL_DIR, MOVE_PROPOSITIONS_PER_TURN, NEURALNET_PATH, PV_MAX_LENGTH, TURN_ANALYSIS_CONFIG_PATH
 
 class Analizer:
     """
@@ -168,7 +168,7 @@ class Analizer:
         output_lines = [line for line in process.stdout.splitlines() if line.strip()]
         output_data = [json.loads(line) for line in output_lines]
 
-        self.turn_analysis[turn] = output_data
+        self.turn_analysis[turn] = output_data[0]
 
     def game_score_lead(self) -> List[float]:
         """
@@ -221,16 +221,36 @@ class Analizer:
 
         return winrate, score_lead, best_move, score_lead_best_move, next_player
     
-    def turn_advanced_data(self, turn) -> Tuple[int]:
+    def turn_advanced_data(self, turn) -> List[Dict[str, Any]]:
         """
-        Docstring for turn_advanced_data
+        This function returns the advanced infos to display on the analysis UI.
+        All data is from the perspective of the Analyzer's selected player.
         
-        :param self: Description
-        :param turn: Description
-        :return: Description
-        :rtype: Tuple[()]
+        :param turn: Selected turn.
+        :type turn: int
+
+        :returns: List of best moves in order, each move also has info on its scoreLead and possible variation.
+
+        :rtype: List[Dict[str, Any]]
+
+        :raises ValueError: If the turn selected is not analysed.
         """
-        pass
+        if turn not in self.turn_analysis.keys():
+            raise ValueError(f"Analizer.turn_advanced_data(turn) -- The turn selected is not in the turn analysis: turn = {turn}")
+        
+        turn_analysis = self.turn_analysis[turn]["moveInfos"]
+
+        output = []
+
+        for i in range(MOVE_PROPOSITIONS_PER_TURN):
+            move = turn_analysis[i]["move"]
+            scoreLead = turn_analysis[i]["scoreLead"]
+            if self.player == "W":
+                scoreLead = -scoreLead
+            possible_variation = turn_analysis[i]["pv"][:PV_MAX_LENGTH]
+            output.append({"move": move, "scoreLead": scoreLead, "possibleVariation": possible_variation})
+
+        return output
 
 
 if __name__ == "__main__":
@@ -247,4 +267,9 @@ if __name__ == "__main__":
         else:
             print(f"{i}  | {score_lead}")
 
-    print(analizer.turn_basic_data(10))
+    analizer.deep_turn_analysis(10)
+    turn10_data = analizer.turn_advanced_data(10)
+
+    print(f"Best move {turn10_data[0]["move"]} with {turn10_data[0]["scoreLead"]} scoreLead and continued by {turn10_data[0]["possibleVariation"]}")
+    print(f"Second best move {turn10_data[1]["move"]} with {turn10_data[1]["scoreLead"]} scoreLead and continued by {turn10_data[1]["possibleVariation"]}")
+    print(f"Third best move {turn10_data[2]["move"]} with {turn10_data[2]["scoreLead"]} scoreLead and continued by {turn10_data[2]["possibleVariation"]}")
