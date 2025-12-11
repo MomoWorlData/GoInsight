@@ -215,6 +215,17 @@ class Analizer:
             score_lead_best_move = -score_lead_best_move
 
         return winrate, score_lead, best_move, score_lead_best_move, next_player
+    
+    def turn_advanced_data(self, turn) -> Tuple[int]:
+        """
+        Docstring for turn_advanced_data
+        
+        :param self: Description
+        :param turn: Description
+        :return: Description
+        :rtype: Tuple[()]
+        """
+        pass
 
 
 if __name__ == "__main__":
