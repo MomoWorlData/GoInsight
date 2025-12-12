@@ -16,3 +16,4 @@ GoInsight documentation
    data/sgf
    features/analysis
    features/evaluation
+   API/API
