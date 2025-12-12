@@ -160,6 +160,18 @@ make clean
 .\make.ps1 clean
 ```
 
+## Using GoInsight as an API
+
+TO DO
+
+### Setup
+
+TO DO
+
+### Usage
+
+TO DO
+
 ## Contributing
 
 Contributions are not welcome yet, as this project is part of students cursus a `IMT Atltantique`. The project will be opened to contributors after the course ended.
