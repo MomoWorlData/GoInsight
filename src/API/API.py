@@ -60,7 +60,7 @@ class API:
         :rtype: str
         """
 
-        res = {"turnData": Dict()}
+        res = {"turnData": dict()}
 
         # Perform game analysis
         self.analizer.shalow_game_analysis()
@@ -159,3 +159,11 @@ class API:
         # Format to JSON and return
         json_output = json.dumps(data, indent=4)
         return json_output
+
+
+if __name__ == "__main__":
+    api = API(file="games/sapindenoel_tronque.sgf", player="B")
+
+    print(api.all_moves_analysis())
+
+    print(api.deep_turn_area_analysis(turn=10, corner1=(0, 0), corner2=(5, 4), invert_selection=True))

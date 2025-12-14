@@ -1,5 +1,6 @@
 from .data import *
 from .features import *
+from .API import *
 
 __all__ = [
     "katago_analysis",
@@ -8,5 +9,6 @@ __all__ = [
     "Move",
     "parse",
     "serialize",
-    "SgfTree"
+    "SgfTree",
+    "API"
 ]
